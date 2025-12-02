@@ -156,24 +156,49 @@ class AudioGenerator:
         # Loud heavy impact
         return AudioGenerator.generate_noise(0.3, volume=0.9, decay=True)
 
+    @staticmethod
+    def generate_menu_click():
+        # Short, crisp click (high frequency burst)
+        return AudioGenerator.generate_tone(1000, 0.05, volume=0.2)
+
+    @staticmethod
+    def generate_menu_enter():
+        # Positive confirmation (ascending tones)
+        framerate = 44100
+        duration = 0.2
+        n_frames = int(framerate * duration)
+        data = bytearray()
+        
+        for i in range(n_frames):
+            t = i / framerate
+            # Slide pitch up from 400 to 800
+            freq = 400 + (400 * (i / n_frames))
+            val = int(32767 * 0.3 * math.sin(2 * math.pi * freq * t))
+            data.extend(struct.pack('<h', val))
+            
+        return AudioGenerator._create_sound(data, framerate)
+
 # ==================================================================================
 # MENU SYSTEM
 # ==================================================================================
 class Menu:
-    def __init__(self, title, options, speaker, on_select=None):
+    def __init__(self, title, options, speaker, sounds, on_select=None):
         self.title = title
         self.options = options # List of (label, callback)
         self.speaker = speaker
+        self.sounds = sounds
         self.current_index = 0
         self.on_select_callback = on_select
 
     def navigate(self, direction):
         # direction: -1 for up, 1 for down
         self.current_index = (self.current_index + direction) % len(self.options)
+        self.sounds['menuclick'].play()
         self.speak_current()
 
     def select(self):
         label, callback = self.options[self.current_index]
+        self.sounds['menuenter'].play()
         if callback:
             callback()
 
@@ -311,7 +336,9 @@ class Game:
             'beep': AudioGenerator.load_sound('beep', AudioGenerator.generate_beep),
             'buzzer': AudioGenerator.load_sound('buzzer', AudioGenerator.generate_buzzer),
             'dunk': AudioGenerator.load_sound('dunk', AudioGenerator.generate_dunk),
-            'locator': AudioGenerator.load_sound('locator', lambda: AudioGenerator.generate_tone(400, 0.05, 0.3))
+            'locator': AudioGenerator.load_sound('locator', lambda: AudioGenerator.generate_tone(400, 0.05, 0.3)),
+            'menuclick': AudioGenerator.load_sound('menuclick', AudioGenerator.generate_menu_click),
+            'menuenter': AudioGenerator.load_sound('menuenter', AudioGenerator.generate_menu_enter)
         }
         print("Sounds ready.")
 
@@ -332,12 +359,12 @@ class Game:
             ("Play Game", lambda: self.set_mode_and_advance("PLAY")),
             ("Practice Mode", lambda: self.set_mode_and_advance("PRACTICE")),
             ("Exit", lambda: self.quit_game())
-        ], self.speaker)
+        ], self.speaker, self.sounds)
 
         self.net_menu = Menu("Select Net Type", [
             ("NBA Net", lambda: self.set_net_and_start("NBA")),
             ("Chain Net", lambda: self.set_net_and_start("Chain"))
-        ], self.speaker)
+        ], self.speaker, self.sounds)
         
         self.current_menu = self.main_menu
 
