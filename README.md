@@ -1,4 +1,4 @@
-# Audio Basketball 2v2
+# Pro Sound Basketball
 
 A fully accessible, audio-only 2-on-2 basketball game written in Python.
 
