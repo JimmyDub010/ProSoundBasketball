@@ -320,7 +320,7 @@ class Game:
         pygame.init()
         pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=512)
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-        pygame.display.set_caption("Audio Basketball 2v2")
+        pygame.display.set_caption("Pro Sound Basketball")
         
         self.speaker = Auto()
         self.clock = pygame.time.Clock()
