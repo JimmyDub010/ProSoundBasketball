@@ -54,18 +54,18 @@ python audio_basketball.py
 - **Defense**: In Play Mode, opponents will try to steal the ball. Listen for "Opponent ball" or "Stolen!" announcements.
 
 ## Custom Sounds
-You can replace the default generated sounds with your own `.wav` files.
+You can replace the default generated sounds with your own `.ogg` files.
 1. Create a folder named `sounds` in the same directory as the game.
-2. Add `.wav` files with the following names:
-   - `dribble.wav`
-   - `shoot.wav`
-   - `net_chain.wav`
-   - `net_nba.wav`
-   - `rim.wav`
-   - `beep.wav`
-   - `buzzer.wav`
-   - `dunk.wav`
-   - `locator.wav`
+2. Add `.ogg` files with the following names:
+   - `dribble.ogg`
+   - `shoot.ogg`
+   - `net_chain.ogg`
+   - `net_nba.ogg`
+   - `rim.ogg`
+   - `beep.ogg`
+   - `buzzer.ogg`
+   - `dunk.ogg`
+   - `locator.ogg`
 3. Restart the game. If a file is missing, the game will use the default generated sound.
 
 ## Credits
