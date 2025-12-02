@@ -70,3 +70,6 @@ You can replace the default generated sounds with your own `.ogg` files.
 
 ## Credits
 Created as a single-file Python project for accessible gaming.
+
+## License
+This project is licensed under the MIT License. See the LICENSE file for details.
