@@ -16,10 +16,10 @@ SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 FPS = 60
 
-COURT_WIDTH = 1000
+COURT_WIDTH = 2400
 COURT_HEIGHT = 600
-HOOP_LEFT_POS = (-400, 0)
-HOOP_RIGHT_POS = (400, 0)
+HOOP_LEFT_POS = (-1100, 0)
+HOOP_RIGHT_POS = (1100, 0)
 THREE_POINT_RADIUS = 250
 DUNK_RANGE = 50
 
@@ -343,7 +343,6 @@ class Game:
         print("Sounds ready.")
 
         self.state = "MENU"
-        self.net_type = "NBA" # Default
         self.mode = "PLAY" # PLAY or PRACTICE
         
         self.score = {TEAM_HOME: 0, TEAM_AWAY: 0}
@@ -354,6 +353,14 @@ class Game:
         self.ball = Ball()
         self.setup_teams()
 
+        # Gyms
+        self.gyms = [
+            ("The Iron Cage", "An underground industrial court with metal grating floors and dim lighting."),
+            ("Skyline Heights", "A rooftop court on a skyscraper, windy with a view of the neon city below."),
+            ("Neon Alley", "A narrow court tucked between two cyberpunk arcades, buzzing with electronic noise."),
+            ("The Hangar", "A massive abandoned aircraft hangar, echoing and vast.")
+        ]
+
         # Menus
         self.main_menu = Menu("Main Menu", [
             ("Play Game", lambda: self.set_mode_and_advance("PLAY")),
@@ -361,23 +368,22 @@ class Game:
             ("Exit", lambda: self.quit_game())
         ], self.speaker, self.sounds)
 
-        self.net_menu = Menu("Select Net Type", [
-            ("NBA Net", lambda: self.set_net_and_start("NBA")),
-            ("Chain Net", lambda: self.set_net_and_start("Chain"))
+        self.gym_menu = Menu("Select Gym", [
+            (f"{gym[0]}: {gym[1]}", lambda i=i: self.set_gym_and_start(i)) for i, gym in enumerate(self.gyms)
         ], self.speaker, self.sounds)
         
         self.current_menu = self.main_menu
 
     def set_mode_and_advance(self, mode):
         self.mode = mode
-        self.state = "NET_SELECT"
-        self.current_menu = self.net_menu
+        self.state = "GYM_SELECT"
+        self.current_menu = self.gym_menu
         self.current_menu.speak_title()
 
-    def set_net_and_start(self, net_type):
-        self.net_type = net_type
+    def set_gym_and_start(self, gym_index):
+        gym_name, gym_desc = self.gyms[gym_index]
         self.state = "GAME"
-        self.speak(f"{net_type} Net selected. Starting game.")
+        self.speak(f"Selected {gym_name}. {gym_desc} Starting game.")
         self.reset_positions()
 
     def quit_game(self):
@@ -481,10 +487,9 @@ class Game:
             # Let's play net sound too for satisfaction
             pygame.time.delay(200)
         
-        if self.net_type == "Chain":
-            self.sounds['net_chain'].play()
-        else:
-            self.sounds['net_nba'].play()
+            pygame.time.delay(200)
+        
+        self.sounds['net_nba'].play()
             
         self.speak(f"Score! {points} points.")
         pygame.time.delay(1000)
@@ -524,7 +529,7 @@ class Game:
                     if event.key == pygame.K_ESCAPE:
                         running = False
                         
-                    if self.state in ["MENU", "NET_SELECT"]:
+                    if self.state in ["MENU", "GYM_SELECT"]:
                         if event.key == pygame.K_UP:
                             self.current_menu.navigate(-1)
                         elif event.key == pygame.K_DOWN:
